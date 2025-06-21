@@ -2,8 +2,16 @@
 
 try
 {
-    var tool = ParseArgs(args);
-    await tool.Execute(outs);
+    var tool = ParseArgs(args, out var helpOnly);
+
+    if (helpOnly)
+    {
+        tool.PrintHelp(outs);
+    }
+    else
+    {
+        await tool.Execute(outs);
+    }
 }
 catch (Exception ex)
 {
@@ -12,8 +20,10 @@ catch (Exception ex)
     await helpTool.Execute(outs);
 }
 
-static ITool ParseArgs(ReadOnlySpan<string> args)
+static ITool ParseArgs(ReadOnlySpan<string> args, out bool helpOnly)
 {
+    helpOnly = false;
+
     for (var i = 0; i < args.Length; ++i)
     {
         var arg = args[i];
@@ -29,6 +39,11 @@ static ITool ParseArgs(ReadOnlySpan<string> args)
         }
 
         var toolArgs = args[(i + 1)..];
+
+        if (toolArgs.Contains("-h") || toolArgs.Contains("--help"))
+        {
+            helpOnly = true;
+        }
 
         if (arg == "new")
         {

@@ -2,7 +2,57 @@ internal sealed class HelpTool : ITool
 {
     public ValueTask Execute(Out outs)
     {
-        outs.WriteLn("usage: textool [-v | --version] [-h | --help] <command> [<args>]");
+        outs.WriteLn("Usage: textool [OPTIONS] COMMAND [ARGS]");
+        outs.WriteLn();
+
+        outs.WriteLn("A tool for easier management of LaTeX projects.");
+        outs.WriteLn();
+
+        outs.WriteLn("Commands:");
+        App.PrintCommandsDescription(outs,
+        [
+            new App.CommandHelpInfo
+            {
+                Name = "new",
+                Description = "Create a new LaTeX project."
+            },
+            new App.CommandHelpInfo
+            {
+                Name = "check",
+                Description = "Check the output and logs of a LaTeX project build."
+            },
+            new App.CommandHelpInfo
+            {
+                Name = "template",
+                Description = "Manage LaTex templates."
+            },
+        ]);
+        outs.WriteLn();
+
+        outs.WriteLn("Global options:");
+        App.PrintOptionsDescription(outs,
+        [
+            new App.OptionHelpInfo
+            {
+                ShortName = null,
+                LongName = "help",
+                Description = "Print this help message."
+            },
+            new App.OptionHelpInfo
+            {
+                ShortName = 'v',
+                LongName = "version",
+                Description = "Print the version of the tool."
+            }
+        ]);
+        outs.WriteLn();
+
+        outs.WriteLn("Run 'textool COMMAND --help' for more information on a command.");
         return ValueTask.CompletedTask;
+    }
+
+    public void PrintHelp(Out outs)
+    {
+        throw new NotSupportedException();
     }
 }

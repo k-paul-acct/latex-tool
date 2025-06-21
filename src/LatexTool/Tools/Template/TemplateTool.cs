@@ -8,4 +8,9 @@ internal sealed class TemplateTool : ITool
     {
         throw new NotImplementedException();
     }
+
+    public void PrintHelp(Out outs)
+    {
+        throw new NotImplementedException();
+    }
 } 

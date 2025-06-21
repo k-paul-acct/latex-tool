@@ -37,6 +37,11 @@ internal sealed class NewTool : ITool
         outs.WriteLn($"Creating a new '{_template}' LaTeX project...");
         return ValueTask.CompletedTask;
     }
+
+    public void PrintHelp(Out outs)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 internal interface IProjectTemplate

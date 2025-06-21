@@ -2,9 +2,12 @@ internal readonly struct Out
 {
     private readonly bool _isOutputRedirected;
 
+    public readonly int TerminalWidth;
+
     public Out()
     {
         _isOutputRedirected = Console.IsOutputRedirected;
+        TerminalWidth = _isOutputRedirected ? 80 : Console.WindowWidth;
     }
 
     public void Write(
@@ -52,6 +55,23 @@ internal readonly struct Out
         ConsoleColor? color = null)
     {
         Write(text, fontStyle, color);
+        WriteLn();
+    }
+
+    public void Write(
+        string? text,
+        ConsoleFontStyle fontStyle = ConsoleFontStyle.Regular,
+        ConsoleColor? color = null)
+    {
+        Write(text.AsSpan(), fontStyle, color);
+    }
+
+    public void WriteLn(
+        string? text,
+        ConsoleFontStyle fontStyle = ConsoleFontStyle.Regular,
+        ConsoleColor? color = null)
+    {
+        Write(text.AsSpan(), fontStyle, color);
         WriteLn();
     }
 

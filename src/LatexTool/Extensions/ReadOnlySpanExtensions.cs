@@ -10,6 +10,13 @@ internal static class ReadOnlySpanExtensions
         return new ReadOnlySpanOfCharSplitByAnyStringEnumerator(
             span, separators, comparison, includeEmpty, includeSeparators);
     }
+
+    public static ReadOnlySpanOfCharWrapTextEnumerator WrapText(
+        this ReadOnlySpan<char> span,
+        int width)
+    {
+        return new ReadOnlySpanOfCharWrapTextEnumerator(span, width);
+    }
 }
 
 internal ref struct ReadOnlySpanOfCharSplitByAnyStringEnumerator
@@ -98,6 +105,65 @@ internal ref struct ReadOnlySpanOfCharSplitByAnyStringEnumerator
             return MoveNext();
         }
 
+        return true;
+    }
+}
+
+internal ref struct ReadOnlySpanOfCharWrapTextEnumerator
+{
+    private readonly int _width;
+
+    private ReadOnlySpan<char> _rest;
+    private ReadOnlySpan<char> _curr;
+
+    public ReadOnlySpanOfCharWrapTextEnumerator(ReadOnlySpan<char> span, int width)
+    {
+        _rest = span.TrimStart();
+        _width = width;
+    }
+
+    public readonly ReadOnlySpan<char> Current => _curr;
+
+    public readonly ReadOnlySpanOfCharWrapTextEnumerator GetEnumerator()
+    {
+        return this;
+    }
+
+    public bool MoveNext()
+    {
+        if (_rest.Length == 0)
+        {
+            return false;
+        }
+
+        var trimPlace = Math.Min(_width, _rest.Length);
+        var part = _rest[..trimPlace];
+        var rest = _rest[trimPlace..];
+
+        if (rest.Length == 0)
+        {
+            _curr = part.TrimEnd();
+            _rest = [];
+            return true;
+        }
+
+        if (part[^1] != ' ' && rest[0] != ' ')
+        {
+            var lastSpaceIndex = part.LastIndexOf(' ');
+            if (lastSpaceIndex == -1)
+            {
+                _curr = part;
+                _rest = rest;
+                return true;
+            }
+
+            _curr = part[..lastSpaceIndex].TrimEnd();
+            _rest = _rest[_curr.Length..].TrimStart();
+            return true;
+        }
+
+        _curr = part.TrimEnd();
+        _rest = rest.TrimStart();
         return true;
     }
 }

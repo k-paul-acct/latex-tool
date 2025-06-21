@@ -5,4 +5,9 @@ internal sealed class VersionTool : ITool
         outs.WriteLn(App.GetVersion());
         return ValueTask.CompletedTask;
     }
+
+    public void PrintHelp(Out outs)
+    {
+        throw new NotSupportedException();
+    }
 }

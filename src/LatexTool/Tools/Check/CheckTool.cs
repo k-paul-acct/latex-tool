@@ -61,4 +61,30 @@ internal sealed class CheckTool : ITool
 
         return ValueTask.CompletedTask;
     }
+
+    public void PrintHelp(Out outs)
+    {
+        outs.WriteLn("Description:");
+        outs.WriteLn("  Checks the output and logs of a LaTeX project build.");
+        outs.WriteLn();
+
+        outs.WriteLn("Usage:");
+        outs.WriteLn("  textool check FILENAME [OPTIONS]");
+        outs.WriteLn();
+
+        outs.WriteLn("Arguments:");
+        outs.WriteLn("  FILENAME  The path to the log file to check.");
+        outs.WriteLn();
+
+        outs.WriteLn("Options:");
+        App.PrintOptionsDescription(outs,
+        [
+            new App.OptionHelpInfo
+            {
+                ShortName = 'p',
+                LongName = "pipe-input",
+                Description = "Pipeline standard input to standard output with important information highlighted."
+            }
+        ]);
+    }
 }
