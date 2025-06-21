@@ -28,14 +28,21 @@ static ITool ParseArgs(ReadOnlySpan<string> args)
             return new HelpTool();
         }
 
+        var toolArgs = args[(i + 1)..];
+
         if (arg == "new")
         {
-            return new NewTool(args[(i + 1)..]);
+            return new NewTool(toolArgs);
         }
 
         if (arg == "check")
         {
-            return new CheckTool(args[(i + 1)..]);
+            return new CheckTool(toolArgs);
+        }
+
+        if (arg == "template")
+        {
+            return new TemplateTool(toolArgs);
         }
 
         App.UnknownCliArgument(arg);

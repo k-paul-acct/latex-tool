@@ -7,12 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <!-- <PropertyGroup>
     <PublishAot>true</PublishAot>
     <PublishTrimmed>true</PublishTrimmed>
     <StripSymbols>true</StripSymbols>
     <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
-  </PropertyGroup>
+  </PropertyGroup> -->
 
   <PropertyGroup>
     <Version>0.0.1</Version>

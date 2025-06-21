@@ -1,4 +1,4 @@
-internal static class ReadOnlySpanOfCharExtensions
+internal static class ReadOnlySpanExtensions
 {
     public static ReadOnlySpanOfCharSplitByAnyStringEnumerator Split(
         this ReadOnlySpan<char> span,
