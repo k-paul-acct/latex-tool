@@ -1,0 +1,10 @@
+% !TeX root = main.tex
+
+\input{preamble}
+
+\begin{document}
+
+{\input{parts/title}}
+{\input{parts/task}}
+
+\end{document}

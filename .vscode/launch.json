@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/LatexTool/bin/Debug/net9.0/LatexTool.dll",
-            "args": ["qwe"],
+            "args": ["new", "labwork", "-o", "test"],
             "cwd": "${workspaceFolder}",
         }
     ]

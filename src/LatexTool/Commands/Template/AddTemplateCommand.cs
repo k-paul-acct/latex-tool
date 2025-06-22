@@ -22,7 +22,7 @@ internal sealed class AddTemplateCommand : CommandBase
     {
         var templateDir = TemplateCommand.GetTemplateDirectory();
         var templatePath = Path.Combine(templateDir, _templateName + ".dll");
-        File.Copy(_templatePath, templatePath);
+        File.Copy(_templatePath, templatePath, overwrite: true);
         outs.WriteLn($"Template '{_templateName}' has been successfully added.");
         return ValueTask.CompletedTask;
     }

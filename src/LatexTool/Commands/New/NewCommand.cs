@@ -1,3 +1,4 @@
+using System.Reflection;
 using LatexTool.Lib;
 using LatexTool.Lib.IO;
 
@@ -36,27 +37,39 @@ internal sealed class NewCommand : CommandBase
         _output = output;
     }
 
-    public override ValueTask Execute(Out outs)
+    public override async ValueTask Execute(Out outs)
     {
+        var templatesDir = TemplateCommand.GetTemplateDirectory();
+        var templatePath = Path.Combine(templatesDir, _template + ".dll");
+
+        if (!File.Exists(templatePath))
+        {
+            throw new InvalidOperationException($"Template '{_template}' not found.");
+        }
+
         outs.WriteLn($"Creating a new '{_template}' LaTeX project...");
-        return ValueTask.CompletedTask;
-    }
-}
 
-internal interface IProjectTemplate
-{
-    string Name { get; }
-    string Description { get; }
-    ValueTask EmitFiles(string? outputDir);
-}
+        var assembly = Assembly.LoadFile(templatePath);
+        var templateType = assembly
+            .GetExportedTypes()
+            .FirstOrDefault(t => typeof(IProjectTemplate).IsAssignableFrom(t) &&
+                                 !t.IsInterface &&
+                                 !t.IsAbstract);
 
-internal sealed class LabWorkTemplate : IProjectTemplate
-{
-    public string Name => "Lab Work";
-    public string Description => "A template for lab work projects";
+        if (templateType is null)
+        {
+            throw new InvalidOperationException($"Error while creating a project.");
+        }
 
-    public ValueTask EmitFiles(string? outputDir)
-    {
-        return ValueTask.CompletedTask;
+        var template = (IProjectTemplate?)Activator.CreateInstance(templateType);
+
+        if (template is null)
+        {
+            throw new InvalidOperationException($"Error while creating a project.");
+        }
+
+        await template.EmitFiles(_output);
+
+        outs.WriteLn($"Project created successfully.");
     }
 }

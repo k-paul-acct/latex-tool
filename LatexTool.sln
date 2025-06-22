@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LatexTool", "src\LatexTool\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LatexTool.Lib", "src\LatexTool.Lib\LatexTool.Lib.csproj", "{FCD89433-8A46-4DF9-86CC-1E7A62AB327C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{31AAAB53-2882-4624-8722-97CF92A01CB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LatexTool.Template.LabWork", "src\templates\LatexTool.Template.LabWork\LatexTool.Template.LabWork.csproj", "{88E3B27C-87BC-4663-80F4-CB53BAD6E7BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +30,15 @@ Global
 		{FCD89433-8A46-4DF9-86CC-1E7A62AB327C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCD89433-8A46-4DF9-86CC-1E7A62AB327C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCD89433-8A46-4DF9-86CC-1E7A62AB327C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88E3B27C-87BC-4663-80F4-CB53BAD6E7BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88E3B27C-87BC-4663-80F4-CB53BAD6E7BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88E3B27C-87BC-4663-80F4-CB53BAD6E7BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88E3B27C-87BC-4663-80F4-CB53BAD6E7BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{93FE7B6E-B074-4398-B0D7-06DD5F8466BD} = {A1ECE0D4-5010-4592-B55B-1F19FCDAC0AC}
 		{FCD89433-8A46-4DF9-86CC-1E7A62AB327C} = {A1ECE0D4-5010-4592-B55B-1F19FCDAC0AC}
+		{31AAAB53-2882-4624-8722-97CF92A01CB9} = {A1ECE0D4-5010-4592-B55B-1F19FCDAC0AC}
+		{88E3B27C-87BC-4663-80F4-CB53BAD6E7BB} = {31AAAB53-2882-4624-8722-97CF92A01CB9}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,26 @@
+{
+    "latex-workshop.latex.tools": [
+        {
+            "name": "lualatexmk-in-ram",
+            "command": "latexmk",
+            "args": [
+                "-lualatex",
+                "-synctex=0",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-outdir=/dev/shm/latex-tmp",
+                "-silent",
+                "-halt-on-error",
+                "main.tex"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "lualatexmk-in-ram",
+            "tools": [
+                "lualatexmk-in-ram"
+            ]
+        }
+    ]
+}
