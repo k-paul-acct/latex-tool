@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using LatexTool.Lib.IO;
 
 internal sealed partial class Parser
 {

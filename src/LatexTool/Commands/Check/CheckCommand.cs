@@ -1,9 +1,13 @@
-internal sealed class CheckTool : ITool
+using LatexTool.Lib;
+using LatexTool.Lib.IO;
+
+[Command($"{App.Name}-check")]
+internal sealed class CheckCommand : CommandBase
 {
     private readonly string _filename;
     private readonly bool _pipeInput;
 
-    public CheckTool(App.IArgsToken[] args)
+    public CheckCommand(App.IArgToken[] args) : base(args)
     {
         if (args.Length == 0)
         {
@@ -30,7 +34,7 @@ internal sealed class CheckTool : ITool
         _pipeInput = pipeInput;
     }
 
-    public ValueTask Execute(Out outs)
+    public override ValueTask Execute(Out outs)
     {
         var result = LogAnalysisResult.Success;
 
@@ -62,7 +66,7 @@ internal sealed class CheckTool : ITool
         return ValueTask.CompletedTask;
     }
 
-    public void PrintHelp(Out outs)
+    public static void PrintHelp(Out outs)
     {
         outs.WriteLn("Description:");
         outs.WriteLn("  Checks the output and logs of a LaTeX project build.");

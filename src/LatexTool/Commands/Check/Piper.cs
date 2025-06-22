@@ -1,3 +1,6 @@
+using LatexTool.Lib.Extensions;
+using LatexTool.Lib.IO;
+
 internal sealed class Piper
 {
     private readonly IEnumerable<string> _lines;

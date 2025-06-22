@@ -1,4 +1,6 @@
-internal static class In
+namespace LatexTool.Lib.IO;
+
+public static class In
 {
     public static string[] ReadAllLines()
     {

@@ -1,4 +1,6 @@
-internal static class ReadOnlySpanExtensions
+namespace LatexTool.Lib.Extensions;
+
+public static class ReadOnlySpanExtensions
 {
     public static ReadOnlySpanOfCharSplitByAnyStringEnumerator Split(
         this ReadOnlySpan<char> span,
@@ -19,7 +21,7 @@ internal static class ReadOnlySpanExtensions
     }
 }
 
-internal ref struct ReadOnlySpanOfCharSplitByAnyStringEnumerator
+public ref struct ReadOnlySpanOfCharSplitByAnyStringEnumerator
 {
     private readonly ReadOnlySpan<char> _span;
     private readonly ReadOnlySpan<string> _separators;
@@ -109,7 +111,7 @@ internal ref struct ReadOnlySpanOfCharSplitByAnyStringEnumerator
     }
 }
 
-internal ref struct ReadOnlySpanOfCharWrapTextEnumerator
+public ref struct ReadOnlySpanOfCharWrapTextEnumerator
 {
     private readonly int _width;
 

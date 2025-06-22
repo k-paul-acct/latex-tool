@@ -1,9 +1,13 @@
-internal sealed class NewTool : ITool
+using LatexTool.Lib;
+using LatexTool.Lib.IO;
+
+[Command($"{App.Name}-new")]
+internal sealed class NewCommand : CommandBase
 {
     private readonly string _template;
     private readonly string? _output;
 
-    public NewTool(App.IArgsToken[] args)
+    public NewCommand(App.IArgToken[] args) : base(args)
     {
         if (args.Length == 0)
         {
@@ -32,15 +36,10 @@ internal sealed class NewTool : ITool
         _output = output;
     }
 
-    public ValueTask Execute(Out outs)
+    public override ValueTask Execute(Out outs)
     {
         outs.WriteLn($"Creating a new '{_template}' LaTeX project...");
         return ValueTask.CompletedTask;
-    }
-
-    public void PrintHelp(Out outs)
-    {
-        throw new NotImplementedException();
     }
 }
 
@@ -58,7 +57,6 @@ internal sealed class LabWorkTemplate : IProjectTemplate
 
     public ValueTask EmitFiles(string? outputDir)
     {
-        // Logic to create files for the lab work template
         return ValueTask.CompletedTask;
     }
 }

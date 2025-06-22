@@ -1,6 +1,14 @@
-internal sealed class HelpTool : ITool
+using LatexTool.Lib;
+using LatexTool.Lib.IO;
+
+[Command($"{App.Name}-help")]
+internal sealed class HelpCommand : CommandBase
 {
-    public ValueTask Execute(Out outs)
+    public HelpCommand(App.IArgToken[] args) : base(args)
+    {
+    }
+
+    public override ValueTask Execute(Out outs)
     {
         outs.WriteLn("Usage: textool [OPTIONS] COMMAND [ARGS]");
         outs.WriteLn();
@@ -49,10 +57,5 @@ internal sealed class HelpTool : ITool
 
         outs.WriteLn("Run 'textool COMMAND --help' for more information on a command.");
         return ValueTask.CompletedTask;
-    }
-
-    public void PrintHelp(Out outs)
-    {
-        throw new NotSupportedException();
     }
 }

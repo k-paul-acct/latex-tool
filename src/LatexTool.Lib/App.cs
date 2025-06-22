@@ -1,14 +1,35 @@
-internal static class App
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using LatexTool.Lib.Extensions;
+using LatexTool.Lib.IO;
+
+namespace LatexTool.Lib;
+
+public static class App
 {
+    public const string Name = "textool";
+
     public static Version GetVersion()
     {
-        var version = typeof(Program).Assembly.GetName().Version;
+        var version = (Assembly.GetEntryAssembly() ?? typeof(App).Assembly).GetName().Version;
         return version is null
             ? new Version(1, 0, 0)
             : new Version(version.Major, version.Minor, version.Build);
     }
 
-    public static void UnknownCliArgument(IArgsToken arg)
+    public static string GetCommandsDirectory()
+    {
+        var templateDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            Name,
+            "commands");
+
+        Directory.CreateDirectory(templateDir);
+        return templateDir;
+    }
+
+    [DoesNotReturn]
+    public static void UnknownCliArgument(IArgToken arg)
     {
         if (arg is Option o)
         {
@@ -20,10 +41,7 @@ internal static class App
             throw new ArgumentException($"Unknown flag '-{f.Value}'");
         }
 
-        if (arg is Word w)
-        {
-            throw new ArgumentException($"Unknown command '{w.Value}'");
-        }
+        throw new ArgumentException($"Unknown command '{arg.StringValue}'");
     }
 
     public static void PrintCommandsDescription(this Out outs, IEnumerable<CommandHelpInfo> commands)
@@ -104,7 +122,7 @@ internal static class App
         public required string Description { get; init; }
     }
 
-    public static IEnumerable<IArgsToken> ParseArgs(string[] args)
+    public static IEnumerable<IArgToken> ParseArgs(string[] args)
     {
         for (var i = 0; i < args.Length; ++i)
         {
@@ -128,38 +146,38 @@ internal static class App
         }
     }
 
-    public static IArgsToken[] Rest(this IEnumerator<IArgsToken> tokens)
+    public static IArgToken[] Rest(this IEnumerator<IArgToken> tokens)
     {
-        var list = new List<IArgsToken>();
+        var list = new List<IArgToken>();
 
         while (tokens.MoveNext())
         {
             list.Add(tokens.Current);
         }
 
-        return [.. list];   
+        return [.. list];
     }
 
-    public interface IArgsToken
+    public interface IArgToken
     {
         string StringValue { get; }
     }
 
-    public sealed class Word : IArgsToken
+    public sealed class Word : IArgToken
     {
         public required string Value { get; init; }
 
         public string StringValue => Value;
     }
 
-    public sealed class Option : IArgsToken
+    public sealed class Option : IArgToken
     {
         public required string Value { get; init; }
 
         public string StringValue => Value;
     }
 
-    public sealed class Flag : IArgsToken
+    public sealed class Flag : IArgToken
     {
         public required char Value { get; init; }
 

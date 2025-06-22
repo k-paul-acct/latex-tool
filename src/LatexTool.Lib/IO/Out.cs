@@ -1,4 +1,6 @@
-internal readonly struct Out
+namespace LatexTool.Lib.IO;
+
+public readonly struct Out
 {
     private readonly bool _isOutputRedirected;
 
