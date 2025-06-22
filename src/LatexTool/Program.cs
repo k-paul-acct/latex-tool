@@ -2,16 +2,8 @@
 
 try
 {
-    var tool = ParseArgs(args, out var helpOnly);
-
-    if (helpOnly)
-    {
-        tool.PrintHelp(outs);
-    }
-    else
-    {
-        await tool.Execute(outs);
-    }
+    var tool = ParseArgs(args);
+    await tool.Execute(outs);
 }
 catch (Exception ex)
 {
@@ -20,47 +12,39 @@ catch (Exception ex)
     await helpTool.Execute(outs);
 }
 
-static ITool ParseArgs(ReadOnlySpan<string> args, out bool helpOnly)
+static ITool ParseArgs(string[] args)
 {
-    helpOnly = false;
+    using var enumerator = App.ParseArgs(args).GetEnumerator();
 
-    for (var i = 0; i < args.Length; ++i)
+    while (enumerator.MoveNext())
     {
-        var arg = args[i];
+        var token = enumerator.Current;
 
-        if (arg == "-v" || arg == "--version")
-        {
-            return new VersionTool();
-        }
-
-        if (arg == "-h" || arg == "--help")
+        if (token is App.Flag { Value: 'h' } or App.Option { Value: "help" })
         {
             return new HelpTool();
         }
-
-        var toolArgs = args[(i + 1)..];
-
-        if (toolArgs.Contains("-h") || toolArgs.Contains("--help"))
+        else if (token is App.Flag { Value: 'v' } or App.Option { Value: "version" })
         {
-            helpOnly = true;
+            return new VersionTool();
+        }
+        else if (token is App.Word word)
+        {
+            var rest = enumerator.Rest();
+            switch (word.Value)
+            {
+                case "new":
+                    return new NewTool(rest);
+                case "check":
+                    return new CheckTool(rest);
+                case "template":
+                    return new TemplateTool(rest);
+                default:
+                    break;
+            }
         }
 
-        if (arg == "new")
-        {
-            return new NewTool(toolArgs);
-        }
-
-        if (arg == "check")
-        {
-            return new CheckTool(toolArgs);
-        }
-
-        if (arg == "template")
-        {
-            return new TemplateTool(toolArgs);
-        }
-
-        App.UnknownCliArgument(arg);
+        App.UnknownCliArgument(token);
     }
 
     return new HelpTool();

@@ -3,21 +3,21 @@ internal sealed class CheckTool : ITool
     private readonly string _filename;
     private readonly bool _pipeInput;
 
-    public CheckTool(ReadOnlySpan<string> args)
+    public CheckTool(App.IArgsToken[] args)
     {
         if (args.Length == 0)
         {
             throw new ArgumentException("no arguments provided");
         }
 
-        var filename = args[0];
+        var filename = args[0].StringValue;
         var pipeInput = false;
 
         for (var i = 1; i < args.Length; ++i)
         {
             var arg = args[i];
 
-            if (arg == "-p" || arg == "--pipe-input")
+            if (arg is App.Flag { Value: 'p' } or App.Option { Value: "pipe-input" })
             {
                 pipeInput = true;
                 continue;

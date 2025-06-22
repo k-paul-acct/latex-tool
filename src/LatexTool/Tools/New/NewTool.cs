@@ -3,24 +3,24 @@ internal sealed class NewTool : ITool
     private readonly string _template;
     private readonly string? _output;
 
-    public NewTool(ReadOnlySpan<string> args)
+    public NewTool(App.IArgsToken[] args)
     {
         if (args.Length == 0)
         {
             throw new ArgumentException("no arguments provided");
         }
 
-        var template = args[0];
+        var template = args[0].StringValue;
         string? output = null;
 
         for (var i = 1; i < args.Length; ++i)
         {
             var arg = args[i];
 
-            if (arg == "-o" || arg == "--output")
+            if (arg is App.Flag { Value: 'o' } or App.Option { Value: "output" })
             {
                 output = ++i < args.Length
-                    ? args[i]
+                    ? args[i].StringValue
                     : throw new ArgumentException("no output directory provided");
                 continue;
             }

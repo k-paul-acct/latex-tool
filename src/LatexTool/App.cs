@@ -8,19 +8,22 @@ internal static class App
             : new Version(version.Major, version.Minor, version.Build);
     }
 
-    public static void UnknownCliArgument(string arg)
+    public static void UnknownCliArgument(IArgsToken arg)
     {
-        if (arg.StartsWith("--"))
+        if (arg is Option o)
         {
-            throw new ArgumentException($"unknown argument '{arg}'");
+            throw new ArgumentException($"Unknown option '--{o.Value}'");
         }
 
-        if (arg.StartsWith('-'))
+        if (arg is Flag f)
         {
-            throw new ArgumentException($"unknown option '{arg}'");
+            throw new ArgumentException($"Unknown flag '-{f.Value}'");
         }
 
-        throw new ArgumentException($"unknown command '{arg}'");
+        if (arg is Word w)
+        {
+            throw new ArgumentException($"Unknown command '{w.Value}'");
+        }
     }
 
     public static void PrintCommandsDescription(this Out outs, IEnumerable<CommandHelpInfo> commands)
@@ -99,5 +102,67 @@ internal static class App
         public required char? ShortName { get; init; }
         public required string? LongName { get; init; }
         public required string Description { get; init; }
+    }
+
+    public static IEnumerable<IArgsToken> ParseArgs(string[] args)
+    {
+        for (var i = 0; i < args.Length; ++i)
+        {
+            var arg = args[i];
+
+            if (arg.StartsWith("--") && arg.Length > 2)
+            {
+                yield return new Option { Value = arg[2..] };
+            }
+            else if (arg.StartsWith('-') && arg.Length > 1)
+            {
+                for (var j = 1; j < arg.Length; ++j)
+                {
+                    yield return new Flag { Value = arg[j] };
+                }
+            }
+            else
+            {
+                yield return new Word { Value = arg };
+            }
+        }
+    }
+
+    public static IArgsToken[] Rest(this IEnumerator<IArgsToken> tokens)
+    {
+        var list = new List<IArgsToken>();
+
+        while (tokens.MoveNext())
+        {
+            list.Add(tokens.Current);
+        }
+
+        return [.. list];   
+    }
+
+    public interface IArgsToken
+    {
+        string StringValue { get; }
+    }
+
+    public sealed class Word : IArgsToken
+    {
+        public required string Value { get; init; }
+
+        public string StringValue => Value;
+    }
+
+    public sealed class Option : IArgsToken
+    {
+        public required string Value { get; init; }
+
+        public string StringValue => Value;
+    }
+
+    public sealed class Flag : IArgsToken
+    {
+        public required char Value { get; init; }
+
+        public string StringValue => char.ToString(Value);
     }
 }
