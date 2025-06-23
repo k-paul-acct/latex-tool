@@ -45,6 +45,7 @@ internal sealed class TemplateCommand : CommandBase
                 new AddTemplateCommand([]).GetConvention(),
                 new ListTemplateCommand([]).GetConvention(),
             ],
+            commandIsMandatory: true,
             arguments: [],
             commandFactory: args => new TemplateCommand(args));
     }

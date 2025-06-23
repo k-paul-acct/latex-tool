@@ -38,6 +38,7 @@ internal sealed class ListTemplateCommand : CommandBase
             aliases: [$"{App.Name} template list"],
             flagOptions: [],
             commands: [],
+            commandIsMandatory: false,
             arguments: [],
             commandFactory: args => new ListTemplateCommand(args));
     }

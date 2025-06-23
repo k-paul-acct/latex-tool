@@ -60,6 +60,7 @@ internal sealed class NewCommand : CommandBase
                 },
             ],
             commands: [],
+            commandIsMandatory: false,
             arguments:
             [
                 new CommandCallArgument

@@ -63,6 +63,7 @@ internal sealed class CheckCommand : CommandBase
                 },
             ],
             commands: [],
+            commandIsMandatory: false,
             arguments:
             [
                 new CommandCallArgument

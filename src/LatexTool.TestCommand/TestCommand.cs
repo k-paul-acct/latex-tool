@@ -26,6 +26,7 @@ public sealed class TestCommand : CommandBase
             aliases: [$"{App.Name} test"],
             flagOptions: [],
             commands: [],
+            commandIsMandatory: false,
             arguments: [],
             commandFactory: args => new TestCommand(args));
     }

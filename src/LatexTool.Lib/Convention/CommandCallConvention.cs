@@ -28,7 +28,8 @@ public sealed class CommandCallConvention
     public string Description { get; }
     public string[] Aliases { get; }
     public List<CommandCallFlagOption> FlagOptions { get; }
-    public List<CommandCallConvention> Commands { get; }
+    public IEnumerable<CommandCallConvention> Commands { get; }
+    public bool CommandIsMandatory { get; }
     public List<CommandCallArgument> Arguments { get; }
 
     public CommandCallConvention(
@@ -37,7 +38,8 @@ public sealed class CommandCallConvention
         string description,
         string[] aliases,
         List<CommandCallFlagOption> flagOptions,
-        List<CommandCallConvention> commands,
+        IEnumerable<CommandCallConvention> commands,
+        bool commandIsMandatory,
         List<CommandCallArgument> arguments,
         Func<App.IArgToken[], CommandBase> commandFactory)
     {
@@ -47,6 +49,7 @@ public sealed class CommandCallConvention
         Aliases = aliases;
         FlagOptions = flagOptions;
         Commands = commands;
+        CommandIsMandatory = commandIsMandatory;
         Arguments = arguments;
         CommandFactory = commandFactory;
 
@@ -71,6 +74,7 @@ public sealed class CommandCallConvention
         var flagOptions = new List<(CommandCallFlagOption FlagOption, string? Value)>();
         var arguments = new List<(CommandCallArgument, string)>();
         var argumentsIndex = 0;
+        (string, CommandBase)? command = null;
         var errors = new List<string>();
 
         using var enumerator = args.AsEnumerable().GetEnumerator();
@@ -165,14 +169,27 @@ public sealed class CommandCallConvention
                 if (commandConvention is not null)
                 {
                     var rest = enumerator.Rest();
-                    var command = commandConvention.CommandFactory(rest);
+                    command = (word.Value, commandConvention.CommandFactory(rest));
                     Validate();
                     return new CommandCallParsingResult
                     {
                         FlagOptions = flagOptions,
-                        Command = (word.Value, command),
+                        Command = command,
                         Arguments = arguments,
                         Rest = rest,
+                        Errors = errors
+                    };
+                }
+
+                if (CommandIsMandatory && command is null)
+                {
+                    errors.Add($"Unknown command '{word.Value}'");
+                    return new CommandCallParsingResult
+                    {
+                        FlagOptions = [],
+                        Command = null,
+                        Arguments = [],
+                        Rest = [],
                         Errors = errors
                     };
                 }
@@ -193,7 +210,7 @@ public sealed class CommandCallConvention
         return new CommandCallParsingResult
         {
             FlagOptions = flagOptions,
-            Command = null,
+            Command = command,
             Arguments = arguments,
             Rest = [],
             Errors = errors
@@ -256,7 +273,7 @@ public sealed class CommandCallConvention
             }));
         }
 
-        if (Commands.Count > 0)
+        if (Commands.Any())
         {
             outs.WriteLn();
             outs.WriteLn("Commands:");

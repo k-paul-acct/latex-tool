@@ -31,6 +31,7 @@ internal sealed class AddTemplateCommand : CommandBase
             aliases: [$"{App.Name} template add [NAME] [DLL]"],
             flagOptions: [],
             commands: [],
+            commandIsMandatory: false,
             arguments:
             [
                 new CommandCallArgument

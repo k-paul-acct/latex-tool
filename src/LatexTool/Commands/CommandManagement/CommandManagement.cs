@@ -35,6 +35,7 @@ internal sealed class CommandManagement : CommandBase
                 new CommandManagementAdd([]).GetConvention(),
                 new CommandManagementList([]).GetConvention(),
             ],
+            commandIsMandatory: true,
             arguments: [],
             commandFactory: args => new CommandManagement(args));
     }

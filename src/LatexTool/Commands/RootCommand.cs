@@ -34,11 +34,10 @@ internal sealed class RootCommand : CommandBase
         outs.WriteLn("Run 'textool COMMAND --help' for more information on a command.");
     }
 
-    public override CommandCallConvention GetConvention()
+    private static IEnumerable<CommandCallConvention> GetCommandsFromAssemblies()
     {
         var commandsDir = App.GetCommandsDirectory();
         var files = Directory.GetFiles(commandsDir, "*.dll");
-        var conventions = new List<CommandCallConvention>();
 
         foreach (var file in files)
         {
@@ -60,12 +59,16 @@ internal sealed class RootCommand : CommandBase
                     var convention = methodInfo.Invoke(instance, null) as CommandCallConvention;
                     if (convention is not null)
                     {
-                        conventions.Add(convention);
+                        yield return convention;
                     }
                 }
             }
         }
+    }
 
+    public override CommandCallConvention GetConvention()
+    {
+        var conventions = GetCommandsFromAssemblies();
         return new CommandCallConvention(
             name: App.Name,
             fullName: App.Name,
@@ -90,15 +93,46 @@ internal sealed class RootCommand : CommandBase
                     IsMandatory = false,
                 },
             ],
-            commands:
-            [
-                new NewCommand([]).GetConvention(),
-                new CheckCommand([]).GetConvention(),
-                new TemplateCommand([]).GetConvention(),
-                new CommandManagement([]).GetConvention(),
-                ..conventions,
-            ],
+            commands: new TwoPartEnumerable<CommandCallConvention>(
+                [
+                    new NewCommand([]).GetConvention(),
+                    new CheckCommand([]).GetConvention(),
+                    new TemplateCommand([]).GetConvention(),
+                    new CommandManagement([]).GetConvention(),
+                ],
+                conventions),
+            commandIsMandatory: false,
             arguments: [],
             commandFactory: args => new RootCommand(args));
+    }
+
+    private sealed class TwoPartEnumerable<T> : IEnumerable<T>
+    {
+        private readonly IEnumerable<T> _first;
+        private readonly IEnumerable<T> _second;
+
+        public TwoPartEnumerable(IEnumerable<T> first, IEnumerable<T> second)
+        {
+            _first = first;
+            _second = second;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            foreach (var item in _first)
+            {
+                yield return item;
+            }
+
+            foreach (var item in _second)
+            {
+                yield return item;
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

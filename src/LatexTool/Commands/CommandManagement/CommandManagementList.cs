@@ -38,6 +38,7 @@ internal sealed class CommandManagementList : CommandBase
             aliases: [$"{App.Name} command list"],
             flagOptions: [],
             commands: [],
+            commandIsMandatory: false,
             arguments: [],
             commandFactory: args => new CommandManagementList(args));
     }

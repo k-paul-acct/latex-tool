@@ -31,6 +31,7 @@ internal sealed class CommandManagementAdd : CommandBase
             aliases: [$"{App.Name} command add [NAME] [DLL]"],
             flagOptions: [],
             commands: [],
+            commandIsMandatory: false,
             arguments:
             [
                 new CommandCallArgument
