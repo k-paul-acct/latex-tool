@@ -17,6 +17,14 @@ public static class App
             : new Version(version.Major, version.Minor, version.Build);
     }
 
+    public static Version GetVersion(this Assembly assembly)
+    {
+        var version = assembly.GetName().Version;
+        return version is null
+            ? new Version(1, 0, 0)
+            : new Version(version.Major, version.Minor, version.Build);
+    }
+
     public static string GetCommandsDirectory()
     {
         var templateDir = Path.Combine(

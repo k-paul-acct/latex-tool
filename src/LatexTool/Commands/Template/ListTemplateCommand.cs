@@ -1,3 +1,4 @@
+using System.Reflection;
 using LatexTool.Lib;
 using LatexTool.Lib.IO;
 
@@ -23,9 +24,9 @@ internal sealed class ListTemplateCommand : CommandBase
             return ValueTask.CompletedTask;
         }
 
-        foreach (var file in files)
+        foreach (var (file, version) in files.Select(x => (x, Assembly.LoadFile(x).GetVersion())))
         {
-            outs.WriteLn(Path.GetFileNameWithoutExtension(file));
+            outs.WriteLn($"{Path.GetFileNameWithoutExtension(file)} {version}");
         }
 
         return ValueTask.CompletedTask;
