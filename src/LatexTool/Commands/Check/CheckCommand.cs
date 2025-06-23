@@ -1,50 +1,28 @@
 using LatexTool.Lib;
+using LatexTool.Lib.Convention;
 using LatexTool.Lib.IO;
 
-[Command($"{App.Name}-check")]
+[Command($"{App.Name}-check", App.Name)]
 internal sealed class CheckCommand : CommandBase
 {
-    private readonly string _filename;
-    private readonly bool _pipeInput;
-
     public CheckCommand(App.IArgToken[] args) : base(args)
     {
-        if (args.Length == 0)
-        {
-            throw new ArgumentException("no arguments provided");
-        }
-
-        var filename = args[0].StringValue;
-        var pipeInput = false;
-
-        for (var i = 1; i < args.Length; ++i)
-        {
-            var arg = args[i];
-
-            if (arg is App.Flag { Value: 'p' } or App.Option { Value: "pipe-input" })
-            {
-                pipeInput = true;
-                continue;
-            }
-
-            App.UnknownCliArgument(arg);
-        }
-
-        _filename = filename;
-        _pipeInput = pipeInput;
     }
 
-    public override ValueTask Execute(Out outs)
+    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
     {
+        var filename = parsingResult.GetArgumentValue("FILENAME");
+        var pipeInput = parsingResult.ContainsOption("pipe-input");
+
         var result = LogAnalysisResult.Success;
 
-        if (_pipeInput)
+        if (pipeInput)
         {
             var piper = new Piper(In.EnumerateAllLines(), outs);
             result |= piper.PipeInput();
         }
 
-        var parser = new Parser(File.ReadAllLines(_filename), outs);
+        var parser = new Parser(File.ReadAllLines(filename), outs);
         result |= parser.Parse();
 
         if ((result & LogAnalysisResult.Errors) != 0)
@@ -66,29 +44,34 @@ internal sealed class CheckCommand : CommandBase
         return ValueTask.CompletedTask;
     }
 
-    public static void PrintHelp(Out outs)
+    public override CommandCallConvention GetConvention()
     {
-        outs.WriteLn("Description:");
-        outs.WriteLn("  Checks the output and logs of a LaTeX project build.");
-        outs.WriteLn();
-
-        outs.WriteLn("Usage:");
-        outs.WriteLn("  textool check FILENAME [OPTIONS]");
-        outs.WriteLn();
-
-        outs.WriteLn("Arguments:");
-        outs.WriteLn("  FILENAME  The path to the log file to check.");
-        outs.WriteLn();
-
-        outs.WriteLn("Options:");
-        App.PrintOptionsDescription(outs,
-        [
-            new App.OptionHelpInfo
-            {
-                ShortName = 'p',
-                LongName = "pipe-input",
-                Description = "Pipeline standard input to standard output with important information highlighted."
-            }
-        ]);
+        return new CommandCallConvention(
+            name: "check",
+            fullName: $"{App.Name} check",
+            description: "Checks the output and logs of a LaTeX project build.",
+            aliases: ["textool check FILENAME [OPTIONS]"],
+            flagOptions:
+            [
+                new CommandCallFlagOption
+                {
+                    Flag = 'p',
+                    Option = "pipe-input",
+                    Description = "Pipeline standard input to standard output with important information highlighted.",
+                    HasValue = false,
+                    IsMandatory = false,
+                },
+            ],
+            commands: [],
+            arguments:
+            [
+                new CommandCallArgument
+                {
+                    Name = "FILENAME",
+                    Description = "The path to the log file to check.",
+                    IsMandatory = true,
+                }
+            ],
+            commandFactory: args => new CheckCommand(args));
     }
 }

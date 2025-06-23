@@ -1,29 +1,51 @@
 using LatexTool.Lib;
+using LatexTool.Lib.Convention;
 using LatexTool.Lib.IO;
 
-[Command($"{App.Name}-template-add")]
+[Command($"{App.Name}-template-add", $"{App.Name}-template")]
 internal sealed class AddTemplateCommand : CommandBase
 {
-    private readonly string _templateName;
-    private readonly string _templatePath;
-
     public AddTemplateCommand(App.IArgToken[] args) : base(args)
     {
-        if (args.Length < 2)
-        {
-            throw new ArgumentException("not enough arguments provided");
-        }
-
-        _templateName = args[0].StringValue;
-        _templatePath = args[1].StringValue;
     }
 
-    public override ValueTask Execute(Out outs)
+    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
     {
-        var templateDir = TemplateCommand.GetTemplateDirectory();
-        var templatePath = Path.Combine(templateDir, _templateName + ".dll");
-        File.Copy(_templatePath, templatePath, overwrite: true);
-        outs.WriteLn($"Template '{_templateName}' has been successfully added.");
+        var name = parsingResult.GetArgumentValue("NAME");
+        var dllPath = parsingResult.GetArgumentValue("DLL");
+
+        var templatesDir = TemplateCommand.GetTemplateDirectory();
+        var templatePath = Path.Combine(templatesDir, name + ".dll");
+
+        File.Copy(dllPath, templatePath, overwrite: true);
+        outs.WriteLn($"Template '{name}' has been successfully added.");
         return ValueTask.CompletedTask;
+    }
+
+    public override CommandCallConvention GetConvention()
+    {
+        return new CommandCallConvention(
+            name: "add",
+            fullName: $"{App.Name} template add",
+            description: "Add a new LaTeX template.",
+            aliases: [$"{App.Name} template add [NAME] [DLL]"],
+            flagOptions: [],
+            commands: [],
+            arguments:
+            [
+                new CommandCallArgument
+                {
+                    Name = "NAME",
+                    Description = "The name of the template to add.",
+                    IsMandatory = true,
+                },
+                new CommandCallArgument
+                {
+                    Name = "DLL",
+                    Description = "The path to the DLL file containing the template implementation.",
+                    IsMandatory = true,
+                },
+            ],
+            commandFactory: args => new AddTemplateCommand(args));
     }
 }

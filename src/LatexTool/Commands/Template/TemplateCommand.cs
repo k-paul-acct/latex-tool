@@ -1,40 +1,12 @@
 using LatexTool.Lib;
+using LatexTool.Lib.Convention;
 using LatexTool.Lib.IO;
 
-[Command($"{App.Name}-template")]
+[Command($"{App.Name}-template", App.Name)]
 internal sealed class TemplateCommand : CommandBase
 {
     public TemplateCommand(App.IArgToken[] args) : base(args)
     {
-    }
-
-    public override ValueTask Execute(Out outs)
-    {
-        throw new InvalidOperationException();
-    }
-
-    public static CommandBase GetCommand(App.IArgToken[] args)
-    {
-        if (args.Length == 0)
-        {
-            throw new ArgumentException("no arguments provided");
-        }
-
-        var command = args[0].StringValue;
-        var rest = args[1..];
-
-        if (command == "add")
-        {
-            return new AddTemplateCommand(rest);
-        }
-
-        if (command == "list")
-        {
-            return new ListTemplateCommand(rest);
-        }
-
-        App.UnknownCliArgument(args[0]);
-        return null!;
     }
 
     public static string GetTemplateDirectory()
@@ -45,5 +17,35 @@ internal sealed class TemplateCommand : CommandBase
             "templates");
         Directory.CreateDirectory(templateDir);
         return templateDir;
+    }
+
+    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    {
+        if (parsingResult.Command is not null)
+        {
+            return parsingResult.Command.Value.Item2.Execute(outs);
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+    public override CommandCallConvention GetConvention()
+    {
+        return new CommandCallConvention(
+            name: "template",
+            fullName: $"{App.Name} template",
+            description: "Manage LaTex templates.",
+            aliases: [$"{App.Name} template [COMMAND] [OPTIONS]"],
+            flagOptions:
+            [
+                CommandCallConvention.SubCommandHelpOption,
+            ],
+            commands:
+            [
+                new AddTemplateCommand([]).GetConvention(),
+                new ListTemplateCommand([]).GetConvention(),
+            ],
+            arguments: [],
+            commandFactory: args => new TemplateCommand(args));
     }
 }

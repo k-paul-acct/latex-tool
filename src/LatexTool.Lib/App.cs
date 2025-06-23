@@ -36,22 +36,6 @@ public static class App
         return templateDir;
     }
 
-    [DoesNotReturn]
-    public static void UnknownCliArgument(IArgToken arg)
-    {
-        if (arg is Option o)
-        {
-            throw new ArgumentException($"Unknown option '--{o.Value}'");
-        }
-
-        if (arg is Flag f)
-        {
-            throw new ArgumentException($"Unknown flag '-{f.Value}'");
-        }
-
-        throw new ArgumentException($"Unknown command '{arg.StringValue}'");
-    }
-
     public static void PrintCommandsDescription(this Out outs, IEnumerable<CommandHelpInfo> commands)
     {
         var commandEntries = commands.Select(x => ($"  {x.Name}  ", x.Description)).ToList();
@@ -66,7 +50,7 @@ public static class App
                 (not null, not null) => $"  -{x.ShortName.Value}, --{x.LongName}  ",
                 (null, not null) => $"      --{x.LongName}  ",
                 (not null, null) => $"  -{x.ShortName.Value}  ",
-                _ => throw new ArgumentException("Option must have at least one name"),
+                _ => "    ",
             }, x.Description))
             .ToList();
 
@@ -171,24 +155,31 @@ public static class App
         string StringValue { get; }
     }
 
-    public sealed class Word : IArgToken
+    public sealed record Word : IArgToken
     {
         public required string Value { get; init; }
-
         public string StringValue => Value;
     }
 
-    public sealed class Option : IArgToken
+    public sealed record Option : IArgToken
     {
         public required string Value { get; init; }
-
         public string StringValue => Value;
+
+        public static implicit operator Option(string value)
+        {
+            return new Option { Value = value };
+        }
     }
 
-    public sealed class Flag : IArgToken
+    public sealed record Flag : IArgToken
     {
         public required char Value { get; init; }
-
         public string StringValue => char.ToString(Value);
+
+        public static implicit operator Flag(char value)
+        {
+            return new Flag { Value = value };
+        }
     }
 }

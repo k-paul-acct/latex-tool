@@ -1,75 +1,74 @@
 using System.Reflection;
 using LatexTool.Lib;
+using LatexTool.Lib.Convention;
 using LatexTool.Lib.IO;
 
-[Command($"{App.Name}-new")]
+[Command($"{App.Name}-new", App.Name)]
 internal sealed class NewCommand : CommandBase
 {
-    private readonly string _template;
-    private readonly string? _output;
-
     public NewCommand(App.IArgToken[] args) : base(args)
     {
-        if (args.Length == 0)
-        {
-            throw new ArgumentException("no arguments provided");
-        }
-
-        var template = args[0].StringValue;
-        string? output = null;
-
-        for (var i = 1; i < args.Length; ++i)
-        {
-            var arg = args[i];
-
-            if (arg is App.Flag { Value: 'o' } or App.Option { Value: "output" })
-            {
-                output = ++i < args.Length
-                    ? args[i].StringValue
-                    : throw new ArgumentException("no output directory provided");
-                continue;
-            }
-
-            App.UnknownCliArgument(arg);
-        }
-
-        _template = template;
-        _output = output;
     }
 
-    public override async ValueTask Execute(Out outs)
+    protected override async ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
     {
+        var template = parsingResult.GetArgumentValue("TEMPLATE");
+        var output = parsingResult.GetOptionValue("output");
+
         var templatesDir = TemplateCommand.GetTemplateDirectory();
-        var templatePath = Path.Combine(templatesDir, _template + ".dll");
+        var templatePath = Path.Combine(templatesDir, template + ".dll");
 
         if (!File.Exists(templatePath))
         {
-            throw new InvalidOperationException($"Template '{_template}' not found.");
+            throw new InvalidOperationException($"Template '{template}' not found.");
         }
 
-        outs.WriteLn($"Creating a new '{_template}' LaTeX project...");
+        outs.WriteLn($"Creating a new '{template}' LaTeX project...");
 
         var assembly = Assembly.LoadFile(templatePath);
         var templateType = assembly
             .GetExportedTypes()
             .FirstOrDefault(t => typeof(IProjectTemplate).IsAssignableFrom(t) &&
                                  !t.IsInterface &&
-                                 !t.IsAbstract);
-
-        if (templateType is null)
-        {
+                                 !t.IsAbstract) ??
             throw new InvalidOperationException($"Error while creating a project.");
-        }
 
-        var template = (IProjectTemplate?)Activator.CreateInstance(templateType);
+        var projectTemplate = (IProjectTemplate?)Activator.CreateInstance(templateType) ??
+                              throw new InvalidOperationException($"Error while creating a project.");
 
-        if (template is null)
-        {
-            throw new InvalidOperationException($"Error while creating a project.");
-        }
-
-        await template.EmitFiles(_output);
+        await projectTemplate.EmitFiles(output);
 
         outs.WriteLn($"Project created successfully.");
+    }
+
+    public override CommandCallConvention GetConvention()
+    {
+        return new CommandCallConvention(
+            name: "new",
+            fullName: $"{App.Name} new",
+            description: "Create a new LaTeX project.",
+            aliases: [$"{App.Name} new [TEMPLATE] [OPTIONS]"],
+            flagOptions:
+            [
+                new CommandCallFlagOption
+                {
+                    Flag = 'o',
+                    Option = "output",
+                    Description = "Output directory for the new project.",
+                    HasValue = true,
+                    IsMandatory = false,
+                },
+            ],
+            commands: [],
+            arguments:
+            [
+                new CommandCallArgument
+                {
+                    Name = "TEMPLATE",
+                    Description = "The template to use for the new project.",
+                    IsMandatory = true,
+                },
+            ],
+            commandFactory: args => new NewCommand(args));
     }
 }

@@ -4,9 +4,11 @@ namespace LatexTool.Lib;
 public sealed class CommandAttribute : Attribute
 {
     public string Name { get; }
+    public string? ParentCommand { get; }
 
-    public CommandAttribute(string name)
+    public CommandAttribute(string name, string? parentCommand)
     {
         Name = name;
+        ParentCommand = parentCommand;
     }
 }

@@ -1,34 +1,51 @@
 using LatexTool.Lib;
+using LatexTool.Lib.Convention;
 using LatexTool.Lib.IO;
 
-[Command($"{App.Name}-command-add")]
+[Command($"{App.Name}-command-add", $"{App.Name}-command")]
 internal sealed class CommandManagementAdd : CommandBase
 {
-    private readonly string _name;
-    private readonly string _dllPath;
-
     public CommandManagementAdd(App.IArgToken[] args) : base(args)
     {
-        if (args.Length != 2)
-        {
-            throw new ArgumentException("Command name and DLL path are required.");
-        }
-
-        _name = args[0].StringValue;
-        _dllPath = args[1].StringValue;
     }
 
-    public override ValueTask Execute(Out outs)
+    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
     {
-        var commandDir = App.GetCommandsDirectory();
-        var parts = _name.Split('-');
-        var fullPath = parts.Length > 1 ? Path.Combine([commandDir, .. parts[..^1]]) : commandDir;
-        var commandFile = Path.Combine(fullPath, $"{parts[^1]}.dll");
+        var name = parsingResult.GetArgumentValue("NAME");
+        var dllPath = parsingResult.GetArgumentValue("DLL");
 
-        Directory.CreateDirectory(fullPath);
+        var commandsDir = App.GetCommandsDirectory();
+        var commandPath = Path.Combine(commandsDir, name + ".dll");
 
-        File.Copy(_dllPath, commandFile, true);
-        outs.WriteLn($"Command '{_name}' has been successfully added.");
+        File.Copy(dllPath, commandPath, overwrite: true);
+        outs.WriteLn($"Command '{name}' has been successfully added.");
         return ValueTask.CompletedTask;
+    }
+
+    public override CommandCallConvention GetConvention()
+    {
+        return new CommandCallConvention(
+            name: "add",
+            fullName: $"{App.Name} command add",
+            description: "Add a new command to the tool.",
+            aliases: [$"{App.Name} command add [NAME] [DLL]"],
+            flagOptions: [],
+            commands: [],
+            arguments:
+            [
+                new CommandCallArgument
+                {
+                    Name = "NAME",
+                    Description = "The name of the command to add.",
+                    IsMandatory = true,
+                },
+                new CommandCallArgument
+                {
+                    Name = "DLL",
+                    Description = "The path to the DLL file containing the command implementation.",
+                    IsMandatory = true,
+                },
+            ],
+            commandFactory: args => new CommandManagementAdd(args));
     }
 }

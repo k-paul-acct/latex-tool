@@ -1,38 +1,41 @@
 using LatexTool.Lib;
+using LatexTool.Lib.Convention;
 using LatexTool.Lib.IO;
 
-[Command($"{App.Name}-command")]
+[Command($"{App.Name}-command", App.Name)]
 internal sealed class CommandManagement : CommandBase
 {
     public CommandManagement(App.IArgToken[] args) : base(args)
     {
     }
 
-    public static CommandBase GetCommand(App.IArgToken[] args)
+    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
     {
-        if (args.Length == 0)
+        if (parsingResult.Command is not null)
         {
-            throw new ArgumentException("no arguments provided");
+            return parsingResult.Command.Value.Item2.Execute(outs);
         }
 
-        var command = args[0].StringValue switch
-        {
-            "add" => new CommandManagementAdd(args[1..]),
-            "list" => new CommandManagementList(args[1..]),
-            _ => (CommandBase?)null,
-        };
-
-        if (command is null)
-        {
-            App.UnknownCliArgument(args[0]);
-            return null!;
-        }
-
-        return command;
+        return ValueTask.CompletedTask;
     }
 
-    public override ValueTask Execute(Out outs)
+    public override CommandCallConvention GetConvention()
     {
-        throw new InvalidOperationException();
+        return new CommandCallConvention(
+            name: "command",
+            fullName: $"{App.Name} command",
+            description: "Additional commands management.",
+            aliases: [$"{App.Name} command [COMMAND] [OPTIONS]"],
+            flagOptions:
+            [
+                CommandCallConvention.SubCommandHelpOption,
+            ],
+            commands:
+            [
+                new CommandManagementAdd([]).GetConvention(),
+                new CommandManagementList([]).GetConvention(),
+            ],
+            arguments: [],
+            commandFactory: args => new CommandManagement(args));
     }
 }

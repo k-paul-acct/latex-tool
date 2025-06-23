@@ -3,10 +3,10 @@ using LatexTool.Lib.IO;
 
 var argTokens = App.ParseArgs(args).ToArray();
 var outs = new Out();
+var command = new RootCommand(argTokens);
 
 try
 {
-    var command = RootCommand.GetCommand(argTokens);
     await command.Execute(outs);
     return 0;
 }

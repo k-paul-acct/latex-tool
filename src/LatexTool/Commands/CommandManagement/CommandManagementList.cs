@@ -1,18 +1,16 @@
+using System.Reflection;
 using LatexTool.Lib;
+using LatexTool.Lib.Convention;
 using LatexTool.Lib.IO;
 
-[Command($"{App.Name}-command-list")]
+[Command($"{App.Name}-command-list", $"{App.Name}-command")]
 internal sealed class CommandManagementList : CommandBase
 {
     public CommandManagementList(App.IArgToken[] args) : base(args)
     {
-        if (args.Length != 0)
-        {
-            throw new ArgumentException("no arguments expected");
-        }
     }
 
-    public override ValueTask Execute(Out outs)
+    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         var commandsDir = App.GetCommandsDirectory();
         var files = Directory.GetFiles(commandsDir, "*.dll");
@@ -23,11 +21,24 @@ internal sealed class CommandManagementList : CommandBase
             return ValueTask.CompletedTask;
         }
 
-        foreach (var file in files)
+        foreach (var (file, version) in files.Select(x => (x, Assembly.LoadFile(x).GetVersion())))
         {
-            outs.WriteLn(Path.GetFileNameWithoutExtension(file));
+            outs.WriteLn($"{Path.GetFileNameWithoutExtension(file)} {version}");
         }
 
         return ValueTask.CompletedTask;
+    }
+
+    public override CommandCallConvention GetConvention()
+    {
+        return new CommandCallConvention(
+            name: "list",
+            fullName: $"{App.Name} command list",
+            description: "List all added custom commands.",
+            aliases: [$"{App.Name} command list"],
+            flagOptions: [],
+            commands: [],
+            arguments: [],
+            commandFactory: args => new CommandManagementList(args));
     }
 }

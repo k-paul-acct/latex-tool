@@ -1,19 +1,16 @@
 using System.Reflection;
 using LatexTool.Lib;
+using LatexTool.Lib.Convention;
 using LatexTool.Lib.IO;
 
-[Command($"{App.Name}-template-list")]
+[Command($"{App.Name}-template-list", $"{App.Name}-template")]
 internal sealed class ListTemplateCommand : CommandBase
 {
     public ListTemplateCommand(App.IArgToken[] args) : base(args)
     {
-        if (args.Length > 0)
-        {
-            throw new ArgumentException("no arguments expected");
-        }
     }
 
-    public override ValueTask Execute(Out outs)
+    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         var templateDir = TemplateCommand.GetTemplateDirectory();
         var files = Directory.GetFiles(templateDir, "*.dll");
@@ -30,5 +27,18 @@ internal sealed class ListTemplateCommand : CommandBase
         }
 
         return ValueTask.CompletedTask;
+    }
+
+    public override CommandCallConvention GetConvention()
+    {
+        return new CommandCallConvention(
+            name: "list",
+            fullName: $"{App.Name} template list",
+            description: "List all templates.",
+            aliases: [$"{App.Name} template list"],
+            flagOptions: [],
+            commands: [],
+            arguments: [],
+            commandFactory: args => new ListTemplateCommand(args));
     }
 }
