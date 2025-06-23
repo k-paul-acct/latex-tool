@@ -6,7 +6,7 @@ namespace LatexTool.Template.LabWork;
 public sealed class LabWorkTemplate : IProjectTemplate
 {
     public string Name => "Lab Work";
-    public string Description => "A template for lab work projects";
+    public string Description => "A template for lab work projects.";
 
     public ValueTask EmitFiles(string? outputDir)
     {

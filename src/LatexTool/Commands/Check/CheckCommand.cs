@@ -50,7 +50,7 @@ internal sealed class CheckCommand : CommandBase
             name: "check",
             fullName: $"{App.Name} check",
             description: "Checks the output and logs of a LaTeX project build.",
-            aliases: ["textool check FILENAME [OPTIONS]"],
+            aliases: ["textool check [FILENAME] [OPTIONS]"],
             flagOptions:
             [
                 new CommandCallFlagOption
