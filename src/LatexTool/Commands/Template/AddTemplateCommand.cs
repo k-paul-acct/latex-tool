@@ -9,7 +9,7 @@ internal sealed class AddTemplateCommand : CommandBase
     {
     }
 
-    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    protected override ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         var name = parsingResult.GetArgumentValue("NAME");
         var dllPath = parsingResult.GetArgumentValue("DLL");
@@ -19,7 +19,7 @@ internal sealed class AddTemplateCommand : CommandBase
 
         File.Copy(dllPath, templatePath, overwrite: true);
         outs.WriteLn($"Template '{name}' has been successfully added.");
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(0);
     }
 
     public override CommandCallConvention GetConvention()

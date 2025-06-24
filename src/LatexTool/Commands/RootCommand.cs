@@ -10,18 +10,18 @@ internal sealed class RootCommand : CommandBase
     {
     }
 
-    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    protected override ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         if (parsingResult.ContainsOption("version"))
         {
             outs.WriteLn(App.GetVersion());
-            return ValueTask.CompletedTask;
+            return ValueTask.FromResult(0);
         }
 
         if (parsingResult.Command is null)
         {
             outs.WriteLn("Run 'textool --help' for more information.");
-            return ValueTask.CompletedTask;
+            return ValueTask.FromResult(0);
         }
 
         return parsingResult.Command.Value.Item2.Execute(outs);

@@ -19,14 +19,14 @@ internal sealed class TemplateCommand : CommandBase
         return templateDir;
     }
 
-    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    protected override ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         if (parsingResult.Command is not null)
         {
             return parsingResult.Command.Value.Item2.Execute(outs);
         }
 
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(0);
     }
 
     public override CommandCallConvention GetConvention()

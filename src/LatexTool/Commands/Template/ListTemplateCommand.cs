@@ -10,7 +10,7 @@ internal sealed class ListTemplateCommand : CommandBase
     {
     }
 
-    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    protected override ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         var templateDir = TemplateCommand.GetTemplateDirectory();
         var files = Directory.GetFiles(templateDir, "*.dll");
@@ -18,7 +18,7 @@ internal sealed class ListTemplateCommand : CommandBase
         if (files.Length == 0)
         {
             outs.WriteLn("No templates found.");
-            return ValueTask.CompletedTask;
+            return ValueTask.FromResult(0);
         }
 
         foreach (var (file, version) in files.Select(x => (x, Assembly.LoadFile(x).GetVersion())))
@@ -26,7 +26,7 @@ internal sealed class ListTemplateCommand : CommandBase
             outs.WriteLn($"{Path.GetFileNameWithoutExtension(file)} {version}");
         }
 
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(0);
     }
 
     public override CommandCallConvention GetConvention()

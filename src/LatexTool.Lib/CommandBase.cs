@@ -13,14 +13,14 @@ public abstract class CommandBase
     }
 
     public abstract CommandCallConvention GetConvention();
-    protected abstract ValueTask Execute(Out outs, CommandCallParsingResult parsingResult);
+    protected abstract ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult);
 
     protected virtual void PrintHelp(Out outs, CommandCallConvention convention)
     {
         convention.PrintHelp(outs);
     }
 
-    public ValueTask Execute(Out outs)
+    public ValueTask<int> Execute(Out outs)
     {
         var convention = GetConvention();
         var parsingResult = convention.ParseCliArguments(_args);
@@ -36,13 +36,13 @@ public abstract class CommandBase
             outs.WriteLn();
             outs.WriteLn($"For more information, run:");
             outs.WriteLn($"  {convention.FullName} --help");
-            return ValueTask.CompletedTask;
+            return ValueTask.FromResult(1);
         }
 
         if (parsingResult.ContainsOption("help"))
         {
             PrintHelp(outs, convention);
-            return ValueTask.CompletedTask;
+            return ValueTask.FromResult(0);
         }
 
         return Execute(outs, parsingResult);

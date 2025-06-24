@@ -9,7 +9,7 @@ internal sealed class CheckCommand : CommandBase
     {
     }
 
-    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    protected override ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         var filename = parsingResult.GetArgumentValue("FILENAME");
         var pipeInput = parsingResult.ContainsOption("pipe-input");
@@ -41,7 +41,7 @@ internal sealed class CheckCommand : CommandBase
             outs.WriteLn("Check completed successfully.", ConsoleFontStyle.Bold, ConsoleColor.Green);
         }
 
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(0);
     }
 
     public override CommandCallConvention GetConvention()

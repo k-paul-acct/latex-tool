@@ -11,10 +11,10 @@ public sealed class TestCommand : CommandBase
     {
     }
 
-    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    protected override ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         outs.WriteLn("This is a test command.");
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(0);
     }
 
     public override CommandCallConvention GetConvention()

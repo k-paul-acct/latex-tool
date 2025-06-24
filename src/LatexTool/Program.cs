@@ -2,13 +2,12 @@
 using LatexTool.Lib.IO;
 
 var argTokens = App.ParseArgs(args).ToArray();
-var outs = new Out();
 var command = new RootCommand(argTokens);
+var outs = new Out();
 
 try
 {
-    await command.Execute(outs);
-    return 0;
+    return await command.Execute(outs);
 }
 catch (Exception ex)
 {

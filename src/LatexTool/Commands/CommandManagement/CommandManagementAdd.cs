@@ -9,7 +9,7 @@ internal sealed class CommandManagementAdd : CommandBase
     {
     }
 
-    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    protected override ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         var name = parsingResult.GetArgumentValue("NAME");
         var dllPath = parsingResult.GetArgumentValue("DLL");
@@ -19,7 +19,7 @@ internal sealed class CommandManagementAdd : CommandBase
 
         File.Copy(dllPath, commandPath, overwrite: true);
         outs.WriteLn($"Command '{name}' has been successfully added.");
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(0);
     }
 
     public override CommandCallConvention GetConvention()

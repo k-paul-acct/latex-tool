@@ -10,7 +10,7 @@ internal sealed class CommandManagementList : CommandBase
     {
     }
 
-    protected override ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    protected override ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         var commandsDir = App.GetCommandsDirectory();
         var files = Directory.GetFiles(commandsDir, "*.dll");
@@ -18,7 +18,7 @@ internal sealed class CommandManagementList : CommandBase
         if (files.Length == 0)
         {
             outs.WriteLn("No commands found.");
-            return ValueTask.CompletedTask;
+            return ValueTask.FromResult(0);
         }
 
         foreach (var (file, version) in files.Select(x => (x, Assembly.LoadFile(x).GetVersion())))
@@ -26,7 +26,7 @@ internal sealed class CommandManagementList : CommandBase
             outs.WriteLn($"{Path.GetFileNameWithoutExtension(file)} {version}");
         }
 
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(0);
     }
 
     public override CommandCallConvention GetConvention()

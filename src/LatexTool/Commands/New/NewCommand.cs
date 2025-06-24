@@ -10,7 +10,7 @@ internal sealed class NewCommand : CommandBase
     {
     }
 
-    protected override async ValueTask Execute(Out outs, CommandCallParsingResult parsingResult)
+    protected override async ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
     {
         var template = parsingResult.GetArgumentValue("TEMPLATE");
         var output = parsingResult.GetOptionValue("output");
@@ -39,6 +39,7 @@ internal sealed class NewCommand : CommandBase
         await projectTemplate.EmitFiles(output);
 
         outs.WriteLn($"Project created successfully.");
+        return 0;
     }
 
     public override CommandCallConvention GetConvention()
