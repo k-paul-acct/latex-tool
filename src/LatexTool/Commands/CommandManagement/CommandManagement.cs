@@ -5,7 +5,7 @@ using LatexTool.Lib.IO;
 [Command($"{App.Name}-command", App.Name)]
 internal sealed class CommandManagement : CommandBase
 {
-    public CommandManagement(App.IArgToken[] args) : base(args)
+    public CommandManagement(App.ArgToken[] args) : base(args)
     {
     }
 
@@ -34,6 +34,7 @@ internal sealed class CommandManagement : CommandBase
             [
                 new CommandManagementAdd([]).GetConvention(),
                 new CommandManagementList([]).GetConvention(),
+                new CommandManagementRemove([]).GetConvention(),
             ],
             commandIsMandatory: true,
             arguments: [],

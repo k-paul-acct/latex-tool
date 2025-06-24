@@ -1,4 +1,4 @@
-namespace LatexTool.Lib.Extensions;
+namespace System;
 
 public static class ReadOnlySpanExtensions
 {

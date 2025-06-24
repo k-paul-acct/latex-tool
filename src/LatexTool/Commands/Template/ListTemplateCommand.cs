@@ -6,7 +6,7 @@ using LatexTool.Lib.IO;
 [Command($"{App.Name}-template-list", $"{App.Name}-template")]
 internal sealed class ListTemplateCommand : CommandBase
 {
-    public ListTemplateCommand(App.IArgToken[] args) : base(args)
+    public ListTemplateCommand(App.ArgToken[] args) : base(args)
     {
     }
 

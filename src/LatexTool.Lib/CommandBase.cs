@@ -5,9 +5,9 @@ namespace LatexTool.Lib;
 
 public abstract class CommandBase
 {
-    private readonly App.IArgToken[] _args;
+    private readonly App.ArgToken[] _args;
 
-    public CommandBase(App.IArgToken[] args)
+    public CommandBase(App.ArgToken[] args)
     {
         _args = args;
     }

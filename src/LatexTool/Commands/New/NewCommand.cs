@@ -6,7 +6,7 @@ using LatexTool.Lib.IO;
 [Command($"{App.Name}-new", App.Name)]
 internal sealed class NewCommand : CommandBase
 {
-    public NewCommand(App.IArgToken[] args) : base(args)
+    public NewCommand(App.ArgToken[] args) : base(args)
     {
     }
 

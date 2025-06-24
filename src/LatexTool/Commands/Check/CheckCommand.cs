@@ -5,8 +5,15 @@ using LatexTool.Lib.IO;
 [Command($"{App.Name}-check", App.Name)]
 internal sealed class CheckCommand : CommandBase
 {
-    public CheckCommand(App.IArgToken[] args) : base(args)
+    private readonly IEnumerable<string>? _inputLines;
+
+    public CheckCommand(App.ArgToken[] args) : base(args)
     {
+    }
+
+    public CheckCommand(App.ArgToken[] args, IEnumerable<string> inputLines) : base(args)
+    {
+        _inputLines = inputLines;
     }
 
     protected override ValueTask<int> Execute(Out outs, CommandCallParsingResult parsingResult)
@@ -18,7 +25,7 @@ internal sealed class CheckCommand : CommandBase
 
         if (pipeInput)
         {
-            var piper = new Piper(In.EnumerateAllLines(), outs);
+            var piper = new Piper(_inputLines ?? In.EnumerateAllLines(), outs);
             result |= piper.PipeInput();
         }
 
@@ -27,17 +34,14 @@ internal sealed class CheckCommand : CommandBase
 
         if ((result & LogAnalysisResult.Errors) != 0)
         {
-            outs.WriteLn();
             outs.WriteLn("Check failed with errors.", ConsoleFontStyle.Bold, ConsoleColor.Red);
         }
         else if ((result & LogAnalysisResult.Warnings) != 0)
         {
-            outs.WriteLn();
             outs.WriteLn("Check completed with warnings.", ConsoleFontStyle.Bold, ConsoleColor.Yellow);
         }
         else if ((result & LogAnalysisResult.Success) != 0)
         {
-            outs.WriteLn();
             outs.WriteLn("Check completed successfully.", ConsoleFontStyle.Bold, ConsoleColor.Green);
         }
 

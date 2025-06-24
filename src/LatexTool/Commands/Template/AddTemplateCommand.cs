@@ -5,7 +5,7 @@ using LatexTool.Lib.IO;
 [Command($"{App.Name}-template-add", $"{App.Name}-template")]
 internal sealed class AddTemplateCommand : CommandBase
 {
-    public AddTemplateCommand(App.IArgToken[] args) : base(args)
+    public AddTemplateCommand(App.ArgToken[] args) : base(args)
     {
     }
 

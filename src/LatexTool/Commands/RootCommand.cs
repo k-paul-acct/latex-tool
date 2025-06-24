@@ -6,7 +6,7 @@ using LatexTool.Lib.IO;
 [Command(App.Name, null)]
 internal sealed class RootCommand : CommandBase
 {
-    public RootCommand(App.IArgToken[] args) : base(args)
+    public RootCommand(App.ArgToken[] args) : base(args)
     {
     }
 
@@ -51,7 +51,7 @@ internal sealed class RootCommand : CommandBase
 
             if (commandType is not null)
             {
-                App.IArgToken[] emptyArgs = [];
+                App.ArgToken[] emptyArgs = [];
                 var instance = Activator.CreateInstance(commandType, [emptyArgs]);
                 var methodInfo = commandType.GetMethod("GetConvention", BindingFlags.Public | BindingFlags.Instance);
                 if (methodInfo is not null && instance is not null)
@@ -97,6 +97,7 @@ internal sealed class RootCommand : CommandBase
                 [
                     new NewCommand([]).GetConvention(),
                     new CheckCommand([]).GetConvention(),
+                    new PublishCommand([]).GetConvention(),
                     new TemplateCommand([]).GetConvention(),
                     new CommandManagement([]).GetConvention(),
                 ],

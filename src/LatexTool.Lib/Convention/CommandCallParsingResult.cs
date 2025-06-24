@@ -6,7 +6,7 @@ public sealed class CommandCallParsingResult
     public required (string, CommandBase)? Command { get; init; }
     public required List<(CommandCallArgument, string)> Arguments { get; init; }
     public required List<string> Errors { get; init; }
-    public required App.IArgToken[] Rest { get; init; }
+    public required App.ArgToken[] Rest { get; init; }
     public bool IsValid => Errors.Count == 0;
     public bool IsHelpRequested => FlagOptions.Any(fo => fo.FlagOption.Option == "help");
 
@@ -23,5 +23,15 @@ public sealed class CommandCallParsingResult
     public string? GetOptionValue(App.Option option)
     {
         return FlagOptions.FirstOrDefault(fo => fo.FlagOption.Option == option).Value;
+    }
+
+    public bool GetFlagValue(App.Flag flag)
+    {
+        return FlagOptions.Any(fo => fo.FlagOption.Flag == flag);
+    }
+
+    public bool GetFlagValue(App.Option option)
+    {
+        return FlagOptions.Any(fo => fo.FlagOption.Option == option);
     }
 }

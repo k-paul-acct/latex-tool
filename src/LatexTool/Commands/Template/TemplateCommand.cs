@@ -5,7 +5,7 @@ using LatexTool.Lib.IO;
 [Command($"{App.Name}-template", App.Name)]
 internal sealed class TemplateCommand : CommandBase
 {
-    public TemplateCommand(App.IArgToken[] args) : base(args)
+    public TemplateCommand(App.ArgToken[] args) : base(args)
     {
     }
 

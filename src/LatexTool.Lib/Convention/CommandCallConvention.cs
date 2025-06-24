@@ -22,7 +22,7 @@ public sealed class CommandCallConvention
         IsMandatory = false
     };
 
-    public Func<App.IArgToken[], CommandBase> CommandFactory { get; }
+    public Func<App.ArgToken[], CommandBase> CommandFactory { get; }
     public string Name { get; }
     public string FullName { get; }
     public string Description { get; }
@@ -41,7 +41,7 @@ public sealed class CommandCallConvention
         IEnumerable<CommandCallConvention> commands,
         bool commandIsMandatory,
         List<CommandCallArgument> arguments,
-        Func<App.IArgToken[], CommandBase> commandFactory)
+        Func<App.ArgToken[], CommandBase> commandFactory)
     {
         Name = name;
         FullName = fullName;
@@ -69,7 +69,7 @@ public sealed class CommandCallConvention
         }
     }
 
-    public CommandCallParsingResult ParseCliArguments(App.IArgToken[] args)
+    public CommandCallParsingResult ParseCliArguments(App.ArgToken[] args)
     {
         var flagOptions = new List<(CommandCallFlagOption FlagOption, string? Value)>();
         var arguments = new List<(CommandCallArgument, string)>();

@@ -7,7 +7,7 @@ namespace LatexTool.TestCommand;
 [Command($"{App.Name}-test", App.Name)]
 public sealed class TestCommand : CommandBase
 {
-    public TestCommand(App.IArgToken[] args) : base(args)
+    public TestCommand(App.ArgToken[] args) : base(args)
     {
     }
 

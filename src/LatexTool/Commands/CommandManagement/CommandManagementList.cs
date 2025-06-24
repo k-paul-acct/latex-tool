@@ -6,7 +6,7 @@ using LatexTool.Lib.IO;
 [Command($"{App.Name}-command-list", $"{App.Name}-command")]
 internal sealed class CommandManagementList : CommandBase
 {
-    public CommandManagementList(App.IArgToken[] args) : base(args)
+    public CommandManagementList(App.ArgToken[] args) : base(args)
     {
     }
 

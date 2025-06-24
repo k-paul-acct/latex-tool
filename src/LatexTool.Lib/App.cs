@@ -114,7 +114,7 @@ public static class App
         public required string Description { get; init; }
     }
 
-    public static IEnumerable<IArgToken> ParseArgs(string[] args)
+    public static IEnumerable<ArgToken> ParseArgs(string[] args)
     {
         for (var i = 0; i < args.Length; ++i)
         {
@@ -138,9 +138,9 @@ public static class App
         }
     }
 
-    public static IArgToken[] Rest(this IEnumerator<IArgToken> tokens)
+    public static ArgToken[] Rest(this IEnumerator<ArgToken> tokens)
     {
-        var list = new List<IArgToken>();
+        var list = new List<ArgToken>();
 
         while (tokens.MoveNext())
         {
@@ -150,21 +150,42 @@ public static class App
         return [.. list];
     }
 
-    public interface IArgToken
+    public abstract record ArgToken
     {
-        string StringValue { get; }
+        public abstract string StringValue { get; }
+
+        public static implicit operator ArgToken(string value)
+        {
+            if (value.StartsWith("--") && value.Length > 2)
+            {
+                return new Option { Value = value[2..] };
+            }
+            else if (value.StartsWith('-') && value.Length > 1)
+            {
+                return new Flag { Value = value[1] };
+            }
+            else
+            {
+                return new Word { Value = value };
+            }
+        }
     }
 
-    public sealed record Word : IArgToken
+    public sealed record Word : ArgToken
     {
         public required string Value { get; init; }
-        public string StringValue => Value;
+        public override string StringValue => Value;
+
+        public static implicit operator Word(string value)
+        {
+            return new Word { Value = value };
+        }
     }
 
-    public sealed record Option : IArgToken
+    public sealed record Option : ArgToken
     {
         public required string Value { get; init; }
-        public string StringValue => Value;
+        public override string StringValue => Value;
 
         public static implicit operator Option(string value)
         {
@@ -172,10 +193,10 @@ public static class App
         }
     }
 
-    public sealed record Flag : IArgToken
+    public sealed record Flag : ArgToken
     {
         public required char Value { get; init; }
-        public string StringValue => char.ToString(Value);
+        public override string StringValue => char.ToString(Value);
 
         public static implicit operator Flag(char value)
         {
