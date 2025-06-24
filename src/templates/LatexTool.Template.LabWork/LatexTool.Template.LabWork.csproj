@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Version>0.0.1</Version>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\LatexTool.Lib\LatexTool.Lib.csproj" />
   </ItemGroup>
