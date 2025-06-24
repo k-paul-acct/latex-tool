@@ -235,6 +235,11 @@ public sealed class CommandCallConvention
                     errors.Add($"Missing required argument '{arg.Name}'");
                 }
             }
+
+            if (CommandIsMandatory && command is null)
+            {
+                errors.Add($"Missing required command");
+            }
         }
     }
 
