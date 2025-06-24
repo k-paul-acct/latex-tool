@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using LatexTool.Lib.Extensions;
 using LatexTool.Lib.IO;
 
 namespace LatexTool.Lib;
