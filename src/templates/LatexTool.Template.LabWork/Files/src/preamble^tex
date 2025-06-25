@@ -51,6 +51,12 @@
 \usepackage[left=\flqq, right=\frqq, leftsub=\glqq, rightsub=\grqq]{dirtytalk}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{tikz}
+    \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+    \tikzstyle{startstop} = [circle, draw, fill=black, minimum size=1em]
+    \tikzstyle{process} = [rectangle, draw, rounded corners, align=center, inner sep=1ex]
+    \tikzstyle{decision} = [diamond, draw, aspect=2, align=center, inner sep=2pt]
+    \tikzstyle{knot} = [circle, draw, align=center, minimum size=1em]
+    \tikzstyle{arrow} = [thick, ->, >=Stealth]
 \usepackage{microtype}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -76,9 +82,10 @@
     \captionsetup[figure]{labelsep=custom, justification=centering, singlelinecheck=false, skip=1ex, font=normalsize}
 \usepackage{array}
 \usepackage{enumitem}
+\usepackage{upquote}
 \usepackage{float}
 \usepackage[all]{nowidow}
-\usepackage{verbatim}
+\usepackage{fancyvrb}
 \usepackage{expl3}
 \usepackage{xparse}
 \usepackage{needspace}
@@ -270,10 +277,10 @@
         {\#}{\#}1
         {\$}{\$}1
         {\%}{\%}1
-        {&}{\&}1
+        {&}{{\selectfont\char"0026}}1
         {'}{\textquotesingle}1
-        {(}{(}1
-        {)}{)}1
+        {(}{{\selectfont\char"0028}}1
+        {)}{{\selectfont\char"0029}}1
         {*}{*}1
         {+}{+}1
         {,}{,}1
@@ -292,9 +299,9 @@
         {9}{9}1
         {:}{:}1
         {;}{;}1
-        {<}{<}1
-        {=}{=}1
-        {>}{>}1
+        {<}{{\selectfont\char"003C}}1
+        {=}{{\selectfont\char"003D}}1
+        {>}{{\selectfont\char"003E}}1
         {?}{?}1
         {@}{@}1
         {[}{[}1
@@ -304,7 +311,7 @@
         {\_}{\_}1
         {`}{\textasciigrave}1
         {\{}{\{}1
-        {\|}{\|}1
+        {\|}{{\selectfont\char"007C}}1
         {\}}{\}}1
         {\~}{\~}1
         %
@@ -344,6 +351,16 @@
 }
 
 \NewDocumentCommand{\listing}{O{\scriptsize} m}{{\lstinputlisting[language={},basicstyle=#1\ttfamily]{#2}}}
+
+\newcommand\textcode{\small\Verb}
+
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@verbatim}
+    {\verbatim@font}
+    {\verbatim@font\small}
+    {}{}
+\makeatother
 
 % Plotting stuff.
 \makeatletter
